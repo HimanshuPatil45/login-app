@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — FlaskAuth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0f14;
+      --surface:  #161922;
+      --border:   #252a36;
+      --accent:   #e8c97d;
+      --accent2:  #c47f3e;
+      --text:     #e8eaf0;
+      --muted:    #6b7280;
+      --success:  #4ade80;
+      --error:    #f87171;
+      --radius:   14px;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      background-image:
+        radial-gradient(ellipse 70% 55% at 80% 85%, rgba(196,127,62,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 45% at 15% 15%, rgba(232,201,125,.08) 0%, transparent 55%);
+    }
+
+    /* ── Card ─────────────────────────────────────── */
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 40px 40px;
+      box-shadow: 0 32px 80px rgba(0,0,0,.55);
+      animation: rise .45s ease both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Brand ────────────────────────────────────── */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: grid; place-items: center;
+      font-size: 18px;
+    }
+    .brand-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      letter-spacing: .3px;
+    }
+
+    /* ── Headings ─────────────────────────────────── */
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      font-weight: 400;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    /* ── Flash messages ───────────────────────────── */
+    .flash {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      animation: rise .3s ease;
+    }
+    .flash.success {
+      background: rgba(74,222,128,.12);
+      border: 1px solid rgba(74,222,128,.3);
+      color: var(--success);
+    }
+    .flash.error {
+      background: rgba(248,113,113,.12);
+      border: 1px solid rgba(248,113,113,.3);
+      color: var(--error);
+    }
+
+    /* ── Password strength bar ────────────────────── */
+    .strength-bar {
+      height: 3px;
+      border-radius: 2px;
+      margin-top: 8px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .strength-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      transition: width .3s, background .3s;
+    }
+    .strength-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      min-height: 16px;
+    }
+
+    /* ── Form elements ────────────────────────────── */
+    .field { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 7px;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232,201,125,.15);
+    }
+    input::placeholder { color: var(--muted); }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    /* ── Button ───────────────────────────────────── */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      color: #0d0f14;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: .3px;
+      transition: opacity .2s, transform .15s;
+    }
+    .btn:hover  { opacity: .88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    /* ── Footer link ──────────────────────────────── */
+    .footer-link {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .footer-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .footer-link a:hover { text-decoration: underline; }
+
+    /* ── Divider ──────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* ── Checklist ────────────────────────────────── */
+    .rules {
+      list-style: none;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .rules li::before { content: "·  "; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Brand mark -->
+  <div class="brand">
+    <div class="brand-icon">🔐</div>
+    <span class="brand-name">FlaskAuth</span>
+  </div>
+
+  <h1>Create account</h1>
+  <p class="subtitle">Fill in the details below to get started.</p>
+
+  <!-- Flash messages from Flask -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">
+        {{ '✓' if category == 'success' else '✕' }} {{ message }}
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('register') }}">
+
+    <!-- Username -->
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username"
+             placeholder="Choose a username" autocomplete="username" required />
+      <p class="hint">At least 3 characters.</p>
+    </div>
+
+    <!-- Password -->
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password"
+             placeholder="Create a password" autocomplete="new-password" required
+             oninput="checkStrength(this.value)" />
+      <!-- Live password strength indicator -->
+      <div class="strength-bar">
+        <div class="strength-bar-fill" id="strength-fill"></div>
+      </div>
+      <p class="strength-label" id="strength-label"></p>
+    </div>
+
+    <!-- Confirm password -->
+    <div class="field">
+      <label for="confirm_password">Confirm Password</label>
+      <input type="password" id="confirm_password" name="confirm_password"
+             placeholder="Re-enter your password" autocomplete="new-password" required />
+    </div>
+
+    <button type="submit" class="btn">Create Account</button>
+  </form>
+
+  <hr class="divider" />
+
+  <!-- Quick rules reminder -->
+  <ul class="rules">
+    <li>Username must be at least 3 characters</li>
+    <li>Password must be at least 4 characters</li>
+    <li>Both password fields must match</li>
+    <li>Usernames are case-sensitive and unique</li>
+  </ul>
+
+  <p class="footer-link" style="margin-top:20px">
+    Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+  </p>
+
+</div>
+
+<!-- ── Password strength checker (vanilla JS, no deps) ── -->
+<script>
+  function checkStrength(pw) {
+    const fill  = document.getElementById('strength-fill');
+    const label = document.getElementById('strength-label');
+    let score = 0;
+
+    if (pw.length >= 4)  score++;          // minimum length
+    if (pw.length >= 8)  score++;          // decent length
+    if (/[A-Z]/.test(pw)) score++;         // uppercase
+    if (/[0-9]/.test(pw)) score++;         // digit
+    if (/[^A-Za-z0-9]/.test(pw)) score++;  // special char
+
+    const levels = [
+      { pct: '0%',   color: '',          text: '' },
+      { pct: '25%',  color: '#f87171',   text: 'Weak' },
+      { pct: '50%',  color: '#fb923c',   text: 'Fair' },
+      { pct: '75%',  color: '#facc15',   text: 'Good' },
+      { pct: '90%',  color: '#4ade80',   text: 'Strong' },
+      { pct: '100%', color: '#4ade80',   text: 'Very strong' },
+    ];
+
+    const lvl = pw.length === 0 ? levels[0] : levels[Math.min(score, 5)];
+    fill.style.width      = lvl.pct;
+    fill.style.background = lvl.color;
+    label.textContent     = lvl.text;
+    label.style.color     = lvl.color || 'var(--muted)';
+  }
+</script>
+
+</body>
+</html>
