@@ -12,4 +12,5 @@
 
 ## Run Locally
 pip install flask
+
 python app.py
